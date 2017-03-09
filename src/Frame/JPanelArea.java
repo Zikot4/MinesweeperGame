@@ -18,12 +18,17 @@ import javax.swing.JPanel;
 public class JPanelArea extends JPanel {
 
 	private static final long serialVersionUID = 1L;
+	
+	private final String YOU_LOOSE = "You loose!";
+	private final String YOU_WIN = "YOU WIN!";
+	private final String CONGRATULATION = "Congratulation! You have a good day today ;)";
+	private final String BOMB_WAS_DETONATED = "Boooooooom... Try again :(";
+	private final int FIELD_WITH_BOMB = -1;
+	private final int FIELD_CLOSED = 0;
+	private final int FIELD_OPENED = 1;
+	private final int FIELD_WITH_FLAG_ON_BOMB = 2;
+	private final int FIELD_WITH_FLAG_ON_EMPTY_BLOCK = 3;
 
-	// status -1 - bomb
-	// status 0 - closed block
-	// status 1 - opened block
-	// status 2 - set flag on bomb
-	// status 3 - set flag on void block
 	private int[][] checkBlocks;
 
 	private MouseListener mouseListener;
@@ -91,7 +96,7 @@ public class JPanelArea extends JPanel {
 		isOpen = 0;
 		for (int i = 0; i < BLOCKS_X; i++) {
 			for (int j = 0; j < BLOCKS_Y; j++) {
-				checkBlocks[i][j] = 0;
+				checkBlocks[i][j] = FIELD_CLOSED;
 				blocks[i][j].setIcon(iCloseBlock);
 			}
 		}
@@ -109,11 +114,11 @@ public class JPanelArea extends JPanel {
 			int first = rand.nextInt(BLOCKS_X);
 			int second = rand.nextInt(BLOCKS_Y);
 
-			if (checkBlocks[first][second] == -1) {
+			if (checkBlocks[first][second] == FIELD_WITH_BOMB) {
 				i--;
 				continue;
 			}
-			checkBlocks[first][second] = -1;
+			checkBlocks[first][second] = FIELD_WITH_BOMB;
 		}
 	}
 
@@ -155,18 +160,18 @@ public class JPanelArea extends JPanel {
 		if (j == BLOCKS_Y - 1)
 			end = 1;
 
-		if (checkBlocks[i][j] == 0) {
+		if (checkBlocks[i][j] == FIELD_CLOSED) {
 			blocks[i][j].setBackground(cGrey);
-			checkBlocks[i][j] = 1;
+			checkBlocks[i][j] = FIELD_OPENED;
 			isOpen++;
 
 			if (isOpen == (BLOCKS_X * BLOCKS_Y - BOMBS)) {
-				JOptionPane.showMessageDialog(this, "YOU WIN!", "You winner!", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(this,CONGRATULATION , YOU_WIN, JOptionPane.ERROR_MESSAGE);
 				for (int n = 0; n < BLOCKS_X; n++) {
 					for (int m = 0; m < BLOCKS_Y; m++) {
-						if ((checkBlocks[n][m] == -1) || (checkBlocks[n][m] == 2)) {
+						if ((checkBlocks[n][m] == FIELD_WITH_BOMB) || (checkBlocks[n][m] == FIELD_WITH_FLAG_ON_BOMB)) {
 							blocks[n][m].setIcon(iDefuse);
-							checkBlocks[n][m] = 1;
+							checkBlocks[n][m] = FIELD_OPENED;
 							blocks[n][m].setBackground(cGrey);
 						}
 					}
@@ -235,20 +240,20 @@ public class JPanelArea extends JPanel {
 			}
 		}
 
-		if (checkBlocks[i][j] == -1) {
+		if (checkBlocks[i][j] == FIELD_WITH_BOMB) {
 			int saveI = i, saveJ = j;
 			blocks[i][j].setBackground(cRed);
 			blocks[i][j].setIcon(iBomb);
-			JOptionPane.showMessageDialog(this, "Boooooooom... Try again :(", "You loose!", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(this,BOMB_WAS_DETONATED , YOU_LOOSE, JOptionPane.ERROR_MESSAGE);
 			for (int n = 0; n < BLOCKS_X; n++) {
 				for (int m = 0; m < BLOCKS_Y; m++) {
-					if (checkBlocks[n][m] == 0)
-						checkBlocks[n][m] = 1;
-					if (checkBlocks[n][m] == 2)
+					if (checkBlocks[n][m] == FIELD_CLOSED)
+						checkBlocks[n][m] = FIELD_OPENED;
+					if (checkBlocks[n][m] == FIELD_WITH_FLAG_ON_BOMB)
 						blocks[n][m].setIcon(iDefuse);
-					if (checkBlocks[n][m] == -1) {
+					if (checkBlocks[n][m] == FIELD_WITH_BOMB) {
 						blocks[n][m].setIcon(iBomb);
-						checkBlocks[n][m] = 1;
+						checkBlocks[n][m] = FIELD_OPENED;
 						if ((n == saveI) && (m == saveJ)) {
 							continue;
 						}
@@ -314,7 +319,7 @@ public class JPanelArea extends JPanel {
 						for (int i = 0; i < BLOCKS_X; i++) {
 							for (int j = 0; j < BLOCKS_Y; j++) {
 								if (blocks[i][j].getName().equals(text)) {
-									if (checkBlocks[i][j] <= 0)
+									if (checkBlocks[i][j] <= FIELD_CLOSED)
 										blocks[i][j].setIcon(iZero);
 								}
 							}
@@ -329,24 +334,24 @@ public class JPanelArea extends JPanel {
 							for (int j = 0; j < BLOCKS_Y; j++) {
 								if (blocks[i][j].getName().equals(text)) {
 
-									if (checkBlocks[i][j] == 0) {
+									if (checkBlocks[i][j] == FIELD_CLOSED) {
 										blocks[i][j].setIcon(iFlag);
-										checkBlocks[i][j] = 3;
+										checkBlocks[i][j] = FIELD_WITH_FLAG_ON_EMPTY_BLOCK;
 										break;
 									}
-									if (checkBlocks[i][j] == -1) {
+									if (checkBlocks[i][j] == FIELD_WITH_BOMB) {
 										blocks[i][j].setIcon(iFlag);
-										checkBlocks[i][j] = 2;
+										checkBlocks[i][j] = FIELD_WITH_FLAG_ON_BOMB;
 										break;
 									}
-									if (checkBlocks[i][j] == 3) {
+									if (checkBlocks[i][j] == FIELD_WITH_FLAG_ON_EMPTY_BLOCK) {
 										blocks[i][j].setIcon(iCloseBlock);
-										checkBlocks[i][j] = 0;
+										checkBlocks[i][j] = FIELD_CLOSED;
 										break;
 									}
-									if (checkBlocks[i][j] == 2) {
+									if (checkBlocks[i][j] == FIELD_WITH_FLAG_ON_BOMB) {
 										blocks[i][j].setIcon(iCloseBlock);
-										checkBlocks[i][j] = -1;
+										checkBlocks[i][j] = FIELD_WITH_BOMB;
 										break;
 									}
 								}
@@ -364,7 +369,7 @@ public class JPanelArea extends JPanel {
 					for (int i = 0; i < BLOCKS_X; i++) {
 						for (int j = 0; j < BLOCKS_Y; j++) {
 							if (blocks[i][j].getName().equals(text)) {
-								if (checkBlocks[i][j] <= 0)
+								if (checkBlocks[i][j] <= FIELD_CLOSED)
 									blocks[i][j].setIcon(iCloseBlock);
 							}
 						}
