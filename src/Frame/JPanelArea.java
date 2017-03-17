@@ -35,6 +35,7 @@ public class JPanelArea extends JPanel {
 	private ActionListener actionListener;
 	private static int BLOCKS_X;
 	private static int BLOCKS_Y;
+	private static int bombs;
 	private static int BOMBS;
 
 	private static JButton[][] blocks;
@@ -54,6 +55,7 @@ public class JPanelArea extends JPanel {
 	private ImageIcon iSeven = new ImageIcon("img/7.png");
 	private ImageIcon iEight = new ImageIcon("img/8.png");
 	private ImageIcon iBomb = new ImageIcon("img/bomb.png");
+	private ImageIcon iBombSmile = new ImageIcon("img/bombSmile.png");
 	private ImageIcon iCloseBlock = new ImageIcon("img/close.png");
 	private ImageIcon iFlag = new ImageIcon("img/Bflag.png");
 	private ImageIcon iDefuse = new ImageIcon("img/Defuse.png");
@@ -61,12 +63,14 @@ public class JPanelArea extends JPanel {
 	private JPanelArea() {
 		BLOCKS_X = 9;
 		BLOCKS_Y = 9;
-		BOMBS = 10;
+		bombs = 10;
+		BOMBS = bombs;
 	}
 
-	private JPanelArea(int blocks_x, int blocks_y, int bombs) {
+	private JPanelArea(int blocks_x, int blocks_y, int bomb) {
 		BLOCKS_X = blocks_x;
 		BLOCKS_Y = blocks_y;
+		bombs = bomb;
 		BOMBS = bombs;
 	}
 
@@ -74,9 +78,10 @@ public class JPanelArea extends JPanel {
 		return pArea;
 	}
 
-	public static void setParametersGame(int blocks_x, int blocks_y, int bombs) {
+	public static void setParametersGame(int blocks_x, int blocks_y, int bomb) {
 		BLOCKS_X = blocks_x;
 		BLOCKS_Y = blocks_y;
+		bombs = bomb;
 		BOMBS = bombs;
 	}
 
@@ -92,6 +97,7 @@ public class JPanelArea extends JPanel {
 		return BOMBS;
 	}
 
+	
 	public void setEmptyCheckBlocks() {
 		isOpen = 0;
 		for (int i = 0; i < BLOCKS_X; i++) {
@@ -109,6 +115,7 @@ public class JPanelArea extends JPanel {
 	}
 
 	protected void createRandomBombs() {
+		BOMBS = bombs;
 		Random rand = new Random();
 		for (int i = 0; i < BOMBS; i++) {
 			int first = rand.nextInt(BLOCKS_X);
@@ -123,10 +130,10 @@ public class JPanelArea extends JPanel {
 	}
 
 	public void run(JFrame frame) {
-		frame.setSize(BLOCKS_Y * 45, BLOCKS_X * 45 + 35);
+		frame.setSize(BLOCKS_Y * 45, BLOCKS_X * 45 + 80);
+		frame.setLocationRelativeTo(null);
 		setBackground(new Color(167, 167, 167));
 
-		// create more levels
 		Level();
 
 		setLayout(new GridLayout(BLOCKS_X, BLOCKS_Y));
@@ -137,7 +144,7 @@ public class JPanelArea extends JPanel {
 				blocks[i][j].setIcon(iCloseBlock);
 				blocks[i][j].setBackground(new Color(167, 167, 167));
 				blocks[i][j].setBorderPainted(true);
-				blocks[i][j].setPreferredSize(new Dimension(30, 30));
+				blocks[i][j].setPreferredSize(new Dimension(45, 45));
 				blocks[i][j].addActionListener(actionListener);
 				blocks[i][j].addMouseListener(mouseListener);
 				blocks[i][j].setName(count + "");
@@ -160,13 +167,16 @@ public class JPanelArea extends JPanel {
 		if (j == BLOCKS_Y - 1)
 			end = 1;
 
+		
 		if (checkBlocks[i][j] == FIELD_CLOSED) {
 			blocks[i][j].setBackground(cGrey);
 			checkBlocks[i][j] = FIELD_OPENED;
 			isOpen++;
-
+			if(isOpen == 1)
+				JPanelHeader.getJPanelHeader().startTimer();
 			if (isOpen == (BLOCKS_X * BLOCKS_Y - BOMBS)) {
-				JOptionPane.showMessageDialog(this,CONGRATULATION , YOU_WIN, JOptionPane.ERROR_MESSAGE);
+				JPanelHeader.getJPanelHeader().resetTimer();
+				JOptionPane.showMessageDialog(this,CONGRATULATION + "Your time: "+ JPanelHeader.getJPanelHeader().getTime() , YOU_WIN, JOptionPane.ERROR_MESSAGE);
 				for (int n = 0; n < BLOCKS_X; n++) {
 					for (int m = 0; m < BLOCKS_Y; m++) {
 						if ((checkBlocks[n][m] == FIELD_WITH_BOMB) || (checkBlocks[n][m] == FIELD_WITH_FLAG_ON_BOMB)) {
@@ -241,6 +251,8 @@ public class JPanelArea extends JPanel {
 		}
 
 		if (checkBlocks[i][j] == FIELD_WITH_BOMB) {
+			JPanelHeader.getJPanelHeader().resetTimer();
+			JPanelHeader.getJPanelHeader().setIconOnButton(iBombSmile);
 			int saveI = i, saveJ = j;
 			blocks[i][j].setBackground(cRed);
 			blocks[i][j].setIcon(iBomb);
@@ -335,21 +347,29 @@ public class JPanelArea extends JPanel {
 								if (blocks[i][j].getName().equals(text)) {
 
 									if (checkBlocks[i][j] == FIELD_CLOSED) {
+										BOMBS--;
+										JPanelHeader.getJPanelHeader().refreshCountBomb();
 										blocks[i][j].setIcon(iFlag);
 										checkBlocks[i][j] = FIELD_WITH_FLAG_ON_EMPTY_BLOCK;
 										break;
 									}
 									if (checkBlocks[i][j] == FIELD_WITH_BOMB) {
+										BOMBS--;
+										JPanelHeader.getJPanelHeader().refreshCountBomb();
 										blocks[i][j].setIcon(iFlag);
 										checkBlocks[i][j] = FIELD_WITH_FLAG_ON_BOMB;
 										break;
 									}
 									if (checkBlocks[i][j] == FIELD_WITH_FLAG_ON_EMPTY_BLOCK) {
+										BOMBS++;
+										JPanelHeader.getJPanelHeader().refreshCountBomb();
 										blocks[i][j].setIcon(iCloseBlock);
 										checkBlocks[i][j] = FIELD_CLOSED;
 										break;
 									}
 									if (checkBlocks[i][j] == FIELD_WITH_FLAG_ON_BOMB) {
+										BOMBS++;
+										JPanelHeader.getJPanelHeader().refreshCountBomb();
 										blocks[i][j].setIcon(iCloseBlock);
 										checkBlocks[i][j] = FIELD_WITH_BOMB;
 										break;

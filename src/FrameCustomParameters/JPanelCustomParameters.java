@@ -5,6 +5,7 @@ import java.awt.event.*;
 import javax.swing.event.*;
 
 import Frame.JPanelArea;
+import Frame.JPanelHeader;
 
 public class JPanelCustomParameters  extends JPanel{
 	private static final long serialVersionUID = 1L;
@@ -69,6 +70,7 @@ public class JPanelCustomParameters  extends JPanel{
 				JPanelArea.getJPanelArea().removeButtons();
 				JPanelArea.setParametersGame(columns,rows, bombs);
 				JPanelArea.getJPanelArea().run(firstFrame);
+				JPanelHeader.getJPanelHeader().refreshCountBomb();
 				secondFrame.dispose();
 			}
 	    	

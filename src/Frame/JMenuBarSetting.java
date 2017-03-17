@@ -1,5 +1,6 @@
 package Frame;
 
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JFrame;
@@ -16,10 +17,10 @@ public class JMenuBarSetting extends JMenuBar {
 	
 	private static JMenuBarSetting menuBerSetting = new JMenuBarSetting();
 	
-	//private static JMenuBarSetting menuBerSetting = new JMenuBarSetting();
 	
 	private JMenuBarSetting(){
-
+		setBackground(Color.WHITE);
+		
 	}
 	
 	protected static JMenuBarSetting getJMenuBarSetting(){
@@ -34,7 +35,7 @@ public class JMenuBarSetting extends JMenuBar {
         JMenu levelMenu = new JMenu("Level");
         add(gameMenu);
         add(levelMenu);
-        
+
         // Create and add simple menu item to one of the drop down menu
         JMenuItem newAction = new JMenuItem("New Game");
         JMenuItem exitAction = new JMenuItem("Exit");
@@ -74,6 +75,8 @@ public class JMenuBarSetting extends JMenuBar {
 			public void actionPerformed(ActionEvent e) {
 				JPanelArea.getJPanelArea().removeButtons();
 				JPanelArea.setParametersGame(9,9, 10);
+				JPanelHeader.getJPanelHeader().resetTimer();
+				JPanelHeader.getJPanelHeader().refreshCountBomb();
 				JPanelArea.getJPanelArea().run(frame);
 			}
 
@@ -84,6 +87,8 @@ public class JMenuBarSetting extends JMenuBar {
 			public void actionPerformed(ActionEvent e) {
 				JPanelArea.getJPanelArea().removeButtons();
 				JPanelArea.setParametersGame(16,16, 40);
+				JPanelHeader.getJPanelHeader().resetTimer();
+				JPanelHeader.getJPanelHeader().refreshCountBomb();
 				JPanelArea.getJPanelArea().run(frame);
 			}
 
@@ -93,6 +98,8 @@ public class JMenuBarSetting extends JMenuBar {
 			public void actionPerformed(ActionEvent e) {
 				JPanelArea.getJPanelArea().removeButtons();
 				JPanelArea.setParametersGame(16,30, 99);
+				JPanelHeader.getJPanelHeader().resetTimer();
+				JPanelHeader.getJPanelHeader().refreshCountBomb();
 				JPanelArea.getJPanelArea().run(frame);
 			}
 
@@ -103,6 +110,7 @@ public class JMenuBarSetting extends JMenuBar {
 			public void actionPerformed(ActionEvent e) {
 				CustomParameters customParameters = new CustomParameters(frame);
 				customParameters.run(frame);
+				JPanelHeader.getJPanelHeader().resetTimer();
 				frame.setEnabled(false);
 			}
 

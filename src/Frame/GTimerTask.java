@@ -16,10 +16,11 @@ public class GTimerTask extends TimerTask {
         this.TLabel = lab;
     }
     
+    
     @Override
     public void run() {
         this.seconds++;
-        if (this.seconds>300)
+        if (this.seconds>998)
            GTimer.cancel();
         else
            TLabel.setText(""+this.seconds);

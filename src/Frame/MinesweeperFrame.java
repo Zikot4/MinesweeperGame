@@ -1,12 +1,10 @@
 package Frame;
 
 import java.awt.BorderLayout;
+
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 
-
-
-//TODO LIST
-//Try use JavaFX in future
 
 public class MinesweeperFrame extends JFrame{	
 	private static final long serialVersionUID = 1L;
@@ -31,7 +29,9 @@ public class MinesweeperFrame extends JFrame{
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setResizable(false);
 		setVisible(true);
-		setLocationRelativeTo(null);
+		
+		ImageIcon icon = new ImageIcon("img/reset.png");
+		setIconImage(icon.getImage());
 		
 		JMenuBarSetting.getJMenuBarSetting().createJMenuBar(this);
 		add(JPanelHeader.getJPanelHeader(),BorderLayout.NORTH);	
